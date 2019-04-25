@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pvp-pod
+spec:
+  serviceName: "pvp-server"
+  containers:
+  - name: pvp-server
+    image: k8s_test_pvp
+    imagePullPolicy: Never
+    envFrom:
+      - configMapRef:
+        name: env-pvp

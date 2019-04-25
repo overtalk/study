@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-game
+  namespace: default
+data:
+  GAME: "game"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: env-pvp
+  namespace: default
+data:
+  PVP: "pvp"  

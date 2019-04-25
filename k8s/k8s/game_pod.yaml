@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: game-pod
+spec:
+  serviceName: "game-server"
+  containers:
+  - name: game-server
+    image: k8s_test_game
+    imagePullPolicy: Never
+    envFrom:
+      - configMapRef:
+        name: env-game
