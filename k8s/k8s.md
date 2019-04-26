@@ -1,5 +1,12 @@
 # Kubenetes
 
+- metadata : 用于唯一区分对象的元数据，包括：name，UID和namespace
+- labels：是一个个的key/value对，定义这样的label到Pod后，其他控制器对象可以通过这样的label来定位到此Pod，从而对Pod进行管理。（参见Deployment等控制器对象）
+- spec： 其它描述信息，包含Pod中运行的容器，容器中运行的应用等等。不同类型的对象拥有不同的spec定义。详情参见API文档：https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.9/
+
+
+
+
 ## k8s物理结构
 - 由多个物理主机（可以是虚拟机）构成集群，将多个底层物理主机的资源抽象出来组成一个平台进行编排管理
 - 集群中所有的节点分成两类 : Master 和 Node，所有的容器中的应用程序都是运行在node中,而master是负责管理有多少个节点、每个节点上应该运行哪个或哪些容器的统一的控制中心。因此master被称为control plane（控制平面），node称为worker
@@ -22,3 +29,56 @@
 - k8s最小的运行单元是pod组件，k8s对这些pod的创建、管理是由pod controller完成的，而非用户本身。我们告诉控制器我们需要的pod信息，其他的由控制器完成
 - 由于pod的销毁/创建是动态的，在这样的动态场景中，我们需要依赖于服务注册、服务发现的方式来完成动态服务的衔接。k8s在pod和客户端之间添加了一个中间层service，来解决pod动态变动引起的ip的改变的问题，如果有多个pod，这个service还可以实现负载均衡的效果。可以理解service为pod的代理，当service创建完成之后也会有一个ip。 
 - 最基础的pod控制器: Deployment
+
+## k8s 对象的介绍
+
+- 在Kubernetes中，几乎一切都是对象。常见的对象包括：Node，Pod，Deployment，ReplicationController， ReplicaSet等等。我们通常通过在描述文件中指定kind来创建不同种类的对象。Kubernetes通过etcd存储我们创建的对象，从而使应用按照你期望的方式稳定运行在容器中。
+- Kubernetes对象本质上一种用于持久化的实体，Kubernetes使用这些持久化实体来描述一个集群。通常一个Kubernetes对象可以包含以下信息：
+    - 需要运行的应用以及运行在哪些node上
+    - 应用可以使用哪些资源
+    - 应用运行时的一些配置，例如重启策略，升级以及容错性
+- 每一个Kubernetes对象都包含两个属性：对象定义（Spec）和对象状态（Status）。Spec包含了你期望对象应有的状态，一般通过.yaml文件来描述。Status是该对象当前实际的状态。Kubernetes在任何状况下，它都会尽力确保对象的状态处于你所期望的状态。
+- 举个例子，一个Deployment类型的对象，代表了你在集群上运行的一个应用。当你创建这个对象的时候，指定了replicas=3，这意味着你希望这个应用以拥有三个副本的状态下运行。如果其中一个副本由于程序问题崩溃了，那么当前应用的Status就是副本数为2，这与你期望的状态（Spec: replicas=3）不相同，因此Kubernetes会自动为你新建一个副本，从而使此应用的实际状态与你期望的状态相符。
+- 创建一个Kubernetes对象通常分为两步：
+    - 创建对象描述文件
+    - 通过kubectl命令行接口创建对象
+![avatar](/k8s/pic/deployment.png)
+
+
+### k8s pod
+- https://www.jianshu.com/p/ce71385e0370
+
+### k8s replicaSet
+- https://www.jianshu.com/p/fd8d8d51741e
+
+### k8s label
+- https://www.jianshu.com/p/cd6b4b4caaab
+- Label以key/value键值对的形式附加到任何对象上，如Pod，Service，Node，RC（ReplicationController）/RS（ReplicaSet）等
+- 在为对象定义好Label后，其他对象就可以通过Label来对对象进行引用, Label的最常见的用法便是通过spec.selector来引用对象
+![avatar](/k8s/pic/label-selector.png)
+- 我们通常使用metadata.labels字段，来为对象添加Label
+- 带有Label的对象创建好之后，我们就可以通过Label Selector来引用这些对象。
+
+### k8s service
+- https://www.jianshu.com/p/c24fd0d132f6
+- 通过ReplicaSet来创建一组Pod来提供具有高可用性的服务。虽然每个Pod都会分配一个单独的Pod IP，会有如下两个问题
+    - Pod IP仅仅是集群内可见的虚拟IP，外部无法访问。
+    - Pod IP会随着Pod的销毁而消失，当ReplicaSet对Pod进行动态伸缩时，Pod IP可能随时随地都会变化，这样对于我们访问这个服务带来了难度。
+- Service可以看作是一组提供相同服务的Pod对外的访问接口。借助Service，应用可以方便地实现服务发现和负载均衡
+- 它和其他Controller对象一样，通过Label Selector来确定一个Service将要使用哪些Pod
+![avatar](/k8s/pic/service.png)
+- 在Serive定义时，我们需要指定spec.type字段，这个字段拥有四个选项:
+    - ClusterIP。默认值。给这个Service分配一个Cluster IP，它是Kubernetes系统自动分配的虚拟IP，因此只能在集群内部访问。
+    - NodePort。将Service通过指定的Node上的端口暴露给外部。通过此方法，访问任意一个NodeIP:nodePort都将路由到ClusterIP，从而成功获得该服务。
+    - LoadBalancer。在 NodePort 的基础上，借助 cloud provider 创建一个外部的负载均衡器，并将请求转发到 <NodeIP>:NodePort。此模式只能在云服务器（AWS等）上使用。
+    - ExternalName。将服务通过 DNS CNAME 记录方式转发到指定的域名（通过 spec.externlName 设定）。需要 kube-dns 版本在 1.7 以上。
+
+### k8s deployment
+- https://www.jianshu.com/p/029661f38674
+
+
+
+
+## kubectl 命令
+- 描述文件创建完成之后，使用kubectl来创建对象
+    - kubectl apply -f xxx.yaml
