@@ -14,12 +14,12 @@ do
     read -p "Select: " option
     case "$option" in
     		1)  clear
-                docker build -t "k8s_test_pvp" -f ./docker/pvp/Dockerfile .
+                docker build -t k8s_test_pvp:v1 -f ./docker/pvp/Dockerfile .
                 docker run -p 8081:8081 -d --name="pvp" k8s_test_pvp
                 exit 1;;
     
             2)	clear
-                docker build -t "k8s_test_game" -f ./docker/game/Dockerfile .
+                docker build -t k8s_test_game:v1 -f ./docker/game/Dockerfile .
                 docker run -p 8080:8080 -d --name="game" k8s_test_game
                 exit 1;;
     

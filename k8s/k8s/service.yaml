@@ -6,11 +6,12 @@ metadata:
   labels:
     app: pvp-server
 spec:
-  type: LoadBalancer
-  ports:
-    - port: 8081
+  # type: LoadBalancer
+  # ports:
+  #   - port: 8081
+  clusterIP: None
   selector:
-    app: pvp-server
+    app: pvp
 ---
 apiVersion: v1
 kind: Service
@@ -23,4 +24,4 @@ spec:
   ports:
     - port: 8080
   selector:
-    app: game-server
+    app: game

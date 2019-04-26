@@ -1,10 +1,9 @@
 ---
-apiVersion: app/v1
+apiVersion: apps/v1
 kind: Deployment  
 metadata:  
   name: pod-pvp
 spec: 
-  serviceName: pvp-server
   replicas: 4
   selector:
     matchLabels:
@@ -15,12 +14,9 @@ spec:
         app: pvp
     spec:
       containers:
-         - name: pvp-server
+        - name: pvp-server
           image: k8s_test_pvp:v1
           imagePullPolicy: Never
           envFrom:
             - configMapRef:
                 name: env-pvp
-          ports:
-            - containerPort: 8081	#容器开发对外的端口
-            hostPort: 8081       	#映射到主机的端口/对外映射的端口（一般可以不写）
