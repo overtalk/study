@@ -6,17 +6,21 @@ metadata:
   labels:
     app: pvp-server
 spec:
-  clusterIP: None
+  type: LoadBalancer
+  ports:
+    - port: 8081
   selector:
     app: pvp-server
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: match-server
+  name: game-server
   labels:
-    app: match-server
+    app: game-server
 spec:
-  clusterIP: None
+  type: LoadBalancer
+  ports:
+    - port: 8080
   selector:
-    app: match-server
+    app: game-server

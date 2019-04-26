@@ -1,14 +1,26 @@
 ---
 apiVersion: v1
-kind: Pod
-metadata:
-  name: game-pod
-spec:
-  serviceName: "game-server"
-  containers:
-  - name: game-server
-    image: k8s_test_game
-    imagePullPolicy: Never
-    envFrom:
-      - configMapRef:
-        name: env-game
+kind: Deployment  
+metadata:  
+  name: pod-game
+spec: 
+  serviceName: game-server
+  replicas: 4
+  selector:
+    matchLabels:
+      app: game
+  template:
+    metadata:
+      labels:
+        app: game
+    spec:
+      containers:
+         - name: game-server
+          image: k8s_test_game:v1
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: env-game
+          ports:
+            - containerPort: 8080 
+            hostPort: 8080 

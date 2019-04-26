@@ -1,14 +1,26 @@
 ---
 apiVersion: v1
-kind: Pod
-metadata:
-  name: pvp-pod
-spec:
-  serviceName: "pvp-server"
-  containers:
-  - name: pvp-server
-    image: k8s_test_pvp
-    imagePullPolicy: Never
-    envFrom:
-      - configMapRef:
-        name: env-pvp
+kind: Deployment  
+metadata:  
+  name: pod-pvp
+spec: 
+  serviceName: pvp-server
+  replicas: 4
+  selector:
+    matchLabels:
+      app: pvp
+  template:
+    metadata:
+      labels:
+        app: pvp
+    spec:
+      containers:
+         - name: pvp-server
+          image: k8s_test_pvp:v1
+          imagePullPolicy: Never
+          envFrom:
+            - configMapRef:
+                name: env-pvp
+          ports:
+            - containerPort: 8081	#容器开发对外的端口
+            hostPort: 8081       	#映射到主机的端口/对外映射的端口（一般可以不写）
