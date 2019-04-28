@@ -5,6 +5,35 @@
 - spec： 其它描述信息，包含Pod中运行的容器，容器中运行的应用等等。不同类型的对象拥有不同的spec定义。详情参见API文档：https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.9/
 
 
+## kubectl 命令
+- 创建对象（json/yaml）
+    - kubectl create -f xxx
+- 显示和查找资源
+    - kubectl get
+        - kubectl get services                          # 列出所有 namespace 中的所有 service
+        - kubectl get pods --all-namespaces             # 列出所有 namespace 中的所有 pod
+        - kubectl get pods -o wide                      # 列出所有 pod 并显示详细信息
+        - kubectl get deployment my-dep                 # 列出指定 deployment
+        - kubectl get pods --include-uninitialized      # 列出该 namespace 中的所有 pod 包括未初始化的
+- 删除资源
+    - kubectl delete
+        - kubectl delete -f ./pod.json                                              # 删除 pod.json 文件中定义的类型和名称的 pod
+        - kubectl delete pod,service baz foo                                        # 删除名为“baz”的 pod 和名为“foo”的 service
+        - kubectl delete pods,services -l name=myLabel                              # 删除具有 name=myLabel 标签的 pod 和 serivce
+        - kubectl delete pods,services -l name=myLabel --include-uninitialized      # 删除具有 name=myLabel 标签的 pod 和 service，包括尚未初始化的
+        - kubectl -n my-ns delete po,svc --all                                      # 删除 my-ns namespace 下的所有 pod 和 serivce，包括尚未初始化的
+- 与运行中的 Pod 交互
+    - kubectl (logs | exec | ...)
+        - kubectl logs my-pod                                 # dump 输出 pod 的日志（stdout）
+        - kubectl logs my-pod -c my-container                 # dump 输出 pod 中容器的日志（stdout，pod 中有多个容器的情况下使用）
+        - kubectl logs -f my-pod                              # 流式输出 pod 的日志（stdout）
+        - kubectl logs -f my-pod -c my-container              # 流式输出 pod 中容器的日志（stdout，pod 中有多个容器的情况下使用）
+        - kubectl run -i --tty busybox --image=busybox -- sh  # 交互式 shell 的方式运行 pod
+        - kubectl attach my-pod -i                            # 连接到运行中的容器
+        - kubectl port-forward my-pod 5000:6000               # 转发 pod 中的 6000 端口到本地的 5000 端口
+        - kubectl exec my-pod -- ls /                         # 在已存在的容器中执行命令（只有一个容器的情况下）
+        - kubectl exec my-pod -c my-container -- ls /         # 在已存在的容器中执行命令（pod 中有多个容器的情况下）
+        - kubectl top pod POD_NAME --containers               # 显示指定 pod 和容器的指标度量
 
 
 ## k8s物理结构
@@ -78,7 +107,3 @@
 
 
 
-
-## kubectl 命令
-- 描述文件创建完成之后，使用kubectl来创建对象
-    - kubectl apply -f xxx.yaml
