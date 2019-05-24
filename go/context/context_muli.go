@@ -11,7 +11,7 @@ var (
 	key3 = "key3"
 )
 
-func main2() {
+func testMuli() {
 	ctx1 := context.WithValue(context.Background(), key1, "1")
 	ctx2 := context.WithValue(ctx1, key2, "2")
 	ctx3 := context.WithValue(ctx2, key3, "3")

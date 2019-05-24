@@ -29,7 +29,7 @@ func work(ctx context.Context) error {
 	return nil
 }
 
-func main1() {
+func testTomeOut() {
 	ctx, cancel := context.WithTimeout(context.Background(), 4*time.Second)
 	defer cancel()
 
