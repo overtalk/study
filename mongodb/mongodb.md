@@ -16,8 +16,8 @@
     - use admin
     - db.createUser({user:"admin",pwd:"123456",roles:["root"]})
 - 在各个数据库中配置各个库的用户
-    - use test
-    - db.createUser({user: "simpleUser",pwd: "simplePass",roles: [{role:"readWrite", db:"test"}]})
+    - use admin
+    - db.createUser({user: "test",pwd: "test",roles: [{role:"readWrite", db:"test"}]})
 
 ## golang连接mongodb
 - 见代码
