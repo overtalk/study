@@ -14,7 +14,7 @@
 ## 账号密码配置
 - 先在system.admin中加入一个超级管理员账号，其他各个数据库的账号在各个数据库中进行配置
     - use admin
-    - db.createUser({user:"admin",pwd:"123456",roles:["root"]})
+    - db.createUser({user:"root",pwd:"12345678",roles:["root"]})
 - 在各个数据库中配置各个库的用户
     - use admin
     - db.createUser({user: "test",pwd: "test",roles: [{role:"readWrite", db:"test"}]})
