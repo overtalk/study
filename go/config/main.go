@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"reflect"
+	"strings"
 
 	"github.com/caarlos0/env"
 
@@ -102,6 +104,36 @@ func (c Config) show() {
 	fmt.Println("SMTP_MessageTemplate   		: ", c.SMTP.MessageTemplate)
 }
 
+// doCheck : 通过反射，然后拿到一些结构体中自定义的tag（ allowempty、required 等）
+func (c Config) checkStruct() {
+	doCheck(reflect.ValueOf(c), "")
+}
+
+func doCheck(ref reflect.Value, parentName string) {
+	refType := ref.Type()
+
+	for i := 0; i < refType.NumField(); i++ {
+		refField := ref.Field(i)
+		if refField.Kind() == reflect.Ptr && !refField.IsNil() {
+			// 因为上面的Config中不会有指针，因此这儿直接continue即可
+			continue
+		}
+		refTypeField := refType.Field(i)
+		allowEmpty := refTypeField.Tag.Get("allowempty") == "true"
+		required := strings.Split(refTypeField.Tag.Get("required"), ",")
+
+		if parentName == "" {
+			fmt.Printf("allowEmpty[%v], required[%v] ---> %s \n", allowEmpty, required, refTypeField.Name)
+		} else {
+			fmt.Printf("allowEmpty[%v], required[%v] ---> %s.%s  \n", allowEmpty, required, parentName, refTypeField.Name)
+		}
+
+		if refField.Kind() == reflect.Struct {
+			doCheck(refField, refTypeField.Name)
+		}
+	}
+}
+
 func main() {
 	// env
 	envConf.SetEnv()
@@ -123,4 +155,6 @@ func main() {
 		log.Fatal("json parse error : ", err)
 	}
 	conf2.show()
+
+	conf2.checkStruct()
 }
