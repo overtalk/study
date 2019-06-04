@@ -173,3 +173,88 @@ func TestGetBySort(t *testing.T) {
 		t.Log("data = ", v)
 	}
 }
+
+func TestGetOR(t *testing.T) {
+	db, err := getMongoDB()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	where := make(map[string]interface{})
+	conditions1 := make(map[string]interface{})
+	conditions2 := make(map[string]interface{})
+	conditions1["a"] = 1
+	conditions2["b"] = 2
+	// $gt 大于
+	// $ne 不等于
+	where["$or"] = []map[string]interface{}{conditions1, conditions2}
+
+	cur, err := db.Collection("test").Find(ctx, where)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	defer cur.Close(nil)
+	var data []map[string]interface{}
+	for cur.Next(nil) {
+		newData := new(map[string]interface{})
+		if err := cur.Decode(newData); err != nil {
+			t.Error(err)
+			return
+		}
+		data = append(data, *newData)
+	}
+	if err := cur.Err(); err != nil {
+		t.Error(err)
+		return
+	}
+
+	for _, v := range data {
+		t.Log("data = ", v)
+	}
+}
+
+func TestGetAnd(t *testing.T) {
+	db, err := getMongoDB()
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	where := make(map[string]interface{})
+	where["a"] = 1
+	where["b"] = 1
+
+	cur, err := db.Collection("test").Find(ctx, where)
+	if err != nil {
+		t.Error(err)
+		return
+	}
+
+	defer cur.Close(nil)
+	var data []map[string]interface{}
+	for cur.Next(nil) {
+		newData := new(map[string]interface{})
+		if err := cur.Decode(newData); err != nil {
+			t.Error(err)
+			return
+		}
+		data = append(data, *newData)
+	}
+	if err := cur.Err(); err != nil {
+		t.Error(err)
+		return
+	}
+
+	for _, v := range data {
+		t.Log("data = ", v)
+	}
+}
