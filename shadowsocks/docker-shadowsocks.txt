@@ -1,0 +1,7 @@
+推荐的vps平台：
+    搬瓦工（bandwagonhost.com）
+    gcp(注册账号需要有visa信用卡，注册即送300💲)
+
+docker pull oddrationale/docker-shadowsocks
+
+docker run -d -p 12345:12345 oddrationale/docker-shadowsocks -s 0.0.0.0 -p 12345 -k YOUR_PASSWORD -m aes-256-cfb
