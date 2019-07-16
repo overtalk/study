@@ -6,8 +6,8 @@
 
 - 下载服务器内容
     - rsync [OPTION]... [USER@]HOST:SRC DEST
-        - eg : rsync -zP ./1.txt root@sausage-intranet-12:/root/
-
+        - eg : rsync -zP root@sausage-aliyun-rew:/data/rdb/06_25_snapshot/rdb-0 /Users/qinhan/Downloads/06-25-snapshot/
+        
 - 同步文件到服务器
     - rsync [OPTION]... SRC [USER@]HOST:DEST
-        - eg : rsync -zP root@sausage-aliyun-rew:/data/rdb/06_25_snapshot/rdb-0 /Users/qinhan/Downloads/06-25-snapshot/
+        - eg : rsync -zP ./1.txt root@sausage-intranet-12:/root/
