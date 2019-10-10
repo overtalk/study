@@ -27,3 +27,6 @@ set global validate_password_length=1;
 # 更新密码
 ALTER USER 'root'@'localhost' IDENTIFIED BY 'root123';
 ```
+
+- 配置文件位置
+    - /etc/my.cnf
